@@ -5,6 +5,7 @@ const Schema = mongoose.Schema;
 const NumberSchema = new Schema({
     submission: {
         type: Number,
+        required: true,
         unique: true,
         match: [/^[0-9]+$/, "Please enter a valid integer"]
     },

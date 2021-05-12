@@ -1,10 +1,28 @@
 import React from "react";
 import "./style.css";
+import API from "../../utils/API";
+
+function StatusEl(props) {
+    if (props.status === "unique") {
+        return <p className="fs-1" style={{ color: "green" }} id="confirm">Unique!</p>;
+    } else if (props.status === "taken") {
+        return <p className="fs-1" style={{ color: "red" }} id="confirm">Not Unique :/</p>;
+    } else if (props.status === "invalid") {
+        return <p className="fs-1" style={{ color: "red" }} id="confirm">That's not a number &gt;:(</p>;
+    } else if (props.status === "null") {
+        return <p className="fs-1" style={{ color: "red" }} id="confirm">You didn't send anything :(</p>;
+    } else {
+        return null;
+    }
+}
 
 class NumForm extends React.Component {
     constructor(props) {
         super(props);
-        this.state = { value: '' };
+        this.state = { 
+            value: '',
+            status: ''
+        };
 
         this.handleChange = this.handleChange.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
@@ -16,7 +34,37 @@ class NumForm extends React.Component {
 
     handleSubmit(event) {
         event.preventDefault();
-        // TODO: submit body to mongo
+        API.saveNum({
+            submission: this.state.value
+        })
+            .then(res => {
+                if (res.data.errors) {
+                    if (res.data.errors.submission.name === "CastError") {
+                        console.log("That wasn't a number.");
+                        this.setState({
+                            status: "invalid"
+                        });
+                        console.log(res);
+                    } else if (res.data.errors.submission.name === "ValidatorError") {
+                        console.log("You didn't send anything.");
+                        this.setState({
+                            status: "null"
+                        });
+                        console.log(res);
+                    }
+                } else if (res.data.name === "MongoError") {
+                    console.log("That wasn't a unique number.");
+                    this.setState({
+                        status: "taken"
+                    });
+                } else {
+                    this.setState({
+                        status: "unique"
+                    });
+                    console.log(res);
+                }
+            })
+            .catch(err => console.log(err));
     }
 
     render() {
@@ -29,6 +77,7 @@ class NumForm extends React.Component {
                         <input type="submit" value="Full Send" className="btn btn-primary" id="submit-btn" />
                     </div>
                 </form>
+                <StatusEl status={this.state.status} />
             </div>
         );
     }
