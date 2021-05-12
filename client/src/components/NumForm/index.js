@@ -40,20 +40,15 @@ class NumForm extends React.Component {
             .then(res => {
                 if (res.data.errors) {
                     if (res.data.errors.submission.name === "CastError") {
-                        console.log("That wasn't a number.");
                         this.setState({
                             status: "invalid"
                         });
-                        console.log(res);
                     } else if (res.data.errors.submission.name === "ValidatorError") {
-                        console.log("You didn't send anything.");
                         this.setState({
                             status: "null"
                         });
-                        console.log(res);
                     }
                 } else if (res.data.name === "MongoError") {
-                    console.log("That wasn't a unique number.");
                     this.setState({
                         status: "taken"
                     });
@@ -61,7 +56,6 @@ class NumForm extends React.Component {
                     this.setState({
                         status: "unique"
                     });
-                    console.log(res);
                 }
             })
             .catch(err => console.log(err));
