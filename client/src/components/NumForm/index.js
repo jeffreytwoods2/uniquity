@@ -41,26 +41,25 @@ class NumForm extends React.Component {
                 if (res.data.errors) {
                     if (res.data.errors.submission.name === "CastError") {
                         this.setState({
-                            value: '',
                             status: "invalid"
                         });
                     } else if (res.data.errors.submission.name === "ValidatorError") {
                         this.setState({
-                            value: '',
                             status: "null"
                         });
                     }
                 } else if (res.data.name === "MongoError") {
                     this.setState({
-                        value: '',
                         status: "taken"
                     });
                 } else {
                     this.setState({
-                        value: '',
                         status: "unique"
                     });
                 }
+            })
+            .then(() => {
+                this.setState({ value: '' })
             })
             .catch(err => console.log(err));
     }
